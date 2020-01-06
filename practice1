@@ -1,0 +1,43 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main()
+{
+    int N;
+    cout << "please input N:" << endl;
+    cin >> N;
+    int* Dynamic_Arr = new int[N]();
+
+    int length5 = N/5;
+    for(int i = 0;i < length5; i++){
+        Dynamic_Arr[i] = (i+1) * 5;
+        cout << "Dynamic_Arr["<< i << "]:" << Dynamic_Arr[i] << endl;
+    }
+
+    int length7 = N/7;
+    for(int j = length5 ; j < length5 + length7; j++ ){
+        Dynamic_Arr[j] = (j-length5 + 1) * 7;
+        cout << "Dynamic_Arr[" << j << "]:" << Dynamic_Arr[j] << endl;
+    }
+
+    int t;
+    for(int i=0;i<length5+length7-1;i++)
+    {
+        for(int j=0;j<length5+length7-1-i;j++)
+        {
+            if(Dynamic_Arr[j]>Dynamic_Arr[j+1])
+             {
+                 t=Dynamic_Arr[j];
+                 Dynamic_Arr[j]=Dynamic_Arr[j+1];
+                 Dynamic_Arr[j+1]=t;
+              }
+         }
+     }
+
+    for(int i = 0 ; i < length5 + length7; i++ ){
+        cout << "Dynamic_Arr[" << i << "]:" << Dynamic_Arr[i] << endl;
+    }
+
+    return 0;
+}
