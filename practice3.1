@@ -1,0 +1,41 @@
+# include <iostream>
+# include <vector>
+using namespace std;
+int main()
+{
+    int order = 1;
+    int trainNum = 8;
+    int trackNum[3] = { 9,9,9 };
+    int frontTrackNum[3] = { 8,8,8 };
+    int threeTrack[3][10] = { 0 };
+    int train[9] = {5,8,1,7,4,2,9,6,3};
+    vector<int>reorder_train;
+    while (order!=10) {
+        if (train[trainNum] == order) {
+            reorder_train.push_back(train[trainNum]);
+            trainNum--;
+            order++;
+        }
+        for (int i = 0; i < 3; i++) {
+            if (threeTrack[i][frontTrackNum[i]] == order) {
+                reorder_train.push_back(threeTrack[i][frontTrackNum[i]]);
+                order++; frontTrackNum[i]--;
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            if (trackNum[i] >=0&&train[trainNum]>threeTrack[i][trackNum[i]]) {
+                threeTrack[i][trackNum[i]-1] = train[trainNum];
+                trackNum[i]--; trainNum--;
+                break;
+            }
+            if (trackNum[0] < 0 && trackNum[1] < 0 && trackNum[2] < 0) {
+                cout << "没有解决的方法！" << endl;
+                return 0;
+            }
+        }
+    }
+    for (auto c = reorder_train.begin(); c != reorder_train.end(); c++) {
+        cout << *c << endl;
+    }
+    return 0;
+}
