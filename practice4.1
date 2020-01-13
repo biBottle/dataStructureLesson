@@ -1,0 +1,102 @@
+import time,threading
+
+class Node():
+    def __init__(self, x):
+        self.data = x
+        self.next = None
+
+class Queue():
+    def __init__(self):
+        self._head = None
+        self._tail = None
+
+    def isEmpty(self):
+        if self._head == self._tail:
+            return True
+        else:
+            return False
+
+    def enqueue(self, val):
+        newNode = Node(val)
+        if self._tail == None:
+            self._head = newNode
+        else:
+            self._tail.next = newNode
+        self._tail = newNode
+
+    def dequeue(self):
+        if self._head == self._tail:
+            return None
+        else:
+            node = self._head
+            self._head = self._head.next
+            return node.data
+
+    def __repr__(self):
+        if self._head == self._tail:
+            return '空'
+        else:
+            result = []
+            cur = self._head
+            while cur != None:
+                result.append(cur.data)
+                cur = cur.next
+            return '->'.join(str(x) for x in result)
+
+class BankQueue(Queue):
+    def __init__(self):
+        Queue.__init__(self)
+        self.callNumber = 0
+
+    def getNumber(self):
+        if self.isEmpty() and self.callNumber == 0:
+            self.callNumber = 1
+        else:
+            self.callNumber += 1
+        return self.callNumber
+
+    def getLength(self):
+        if self.isEmpty():
+            return 0
+        else:
+            cur = self._head
+            len = 1
+            while cur != self._tail:
+                cur = cur.next
+                len += 1
+            return len
+
+class ServiceWindow(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.bankQueue = None
+        self.lock = threading.Lock()
+
+    def service(self):
+        self.lock.acquire()
+        while True:
+            time.sleep(10)
+            if not self.bankQueue.isEmpty():
+               print('请客户 %d 号到 %s 号窗口' % (self.bankQueue._head.data, threading.current_thread().name))
+               self.bankQueue.dequeue()
+               self.lock.release()
+
+if __name__ == '__main__':
+    bankQueue = BankQueue()
+    windowcount = 3
+    serviceWindows = [None] * windowcount
+    threadList = [None] * windowcount
+    for i in range(windowcount):
+        serviceWindows[i] = ServiceWindow()
+        serviceWindows[i].bankQueue = bankQueue
+        threadList[i] = threading.Thread(name=(i + 1), target=serviceWindows[i].service, args=())
+        threadList[i].start()
+
+    while True:
+        input('请点击触摸屏获取号码：')
+        callNumber = bankQueue.getNumber()
+        if bankQueue != None:
+            print('您的号码是：%d，您前面有 %d 位' % (callNumber, bankQueue.getLength()))
+            bankQueue.enqueue(callNumber)
+        else:
+            print('您的号码是：%d，您前面有 0 位' % (callNumber))
