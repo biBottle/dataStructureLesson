@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int balancedString(string s)
+    {
+        vector<char> chars{'Q','W','E','R'};
+        unordered_map<char,int> cnt;
+        bool balance=true;
+        for(auto ch : s)
+            ++cnt[ch];
+        int len = s.size();
+        int n = len/4;
+        for(auto ch:chars)
+        {
+            cnt[ch]-=n;
+            if(cnt[ch]>0)
+                balance = false;
+        }
+        if(balance==true)
+            return 0;
+        int left =0,right =0,num=len;
+        while(left<=right&&right<len)
+        {
+            bool find = true;
+            --cnt[s[right]];
+            while(find)
+            {
+                for(auto ch:chars)
+                {
+                    if(cnt[ch]>0)
+                    {
+                        find =false;
+                        break;
+                    }
+                }
+                if(find ==true)
+                {
+                    num = min(num,right-left+1);
+                    ++cnt[s[left++]];
+                }
+            }
+            ++right;
+        }
+        return num;
+    }
+};
